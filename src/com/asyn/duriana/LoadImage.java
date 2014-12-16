@@ -22,14 +22,11 @@ import android.widget.ImageView;
 import com.asyn.duriana.cache.FileCache;
 import com.asyn.duriana.cache.MemoryCache;
 import com.asyn.duriana.utilities.Utils;
-import com.asyn.durianacache.R;
 
 public class LoadImage {
 	
 	private static final int N_THREADS = 5;
-	private static final int DEFAULT_IMG = R.drawable.ic_launcher;
-	
-	private static final int REQUIRED_SIZE = 1000;
+	private static final int SCALE = 1;
 	
 	private static final int CONNECTION_TIME = 30 * 1000;
 
@@ -41,12 +38,14 @@ public class LoadImage {
 	
 	private ExecutorService executorService;
 	
-	private int required_size;
+	private int default_img;
 	
-	public LoadImage(Context context) {
+	public LoadImage(Context context, int drawable) {
 		cache = new MemoryCache();
 		fileCache = new FileCache(context);
 		executorService = Executors.newFixedThreadPool(N_THREADS);
+		default_img = drawable;
+		default_img = drawable;
 	}
 	
 	public void displayImage(ImageView imageview, String url) {
@@ -56,7 +55,7 @@ public class LoadImage {
 			imageview.setImageBitmap(bitmap);
 		else {
 			queuePhoto(imageview, url);
-			imageview.setImageResource(DEFAULT_IMG);
+			imageview.setImageResource(default_img);
 		}
 	}
 	
@@ -97,22 +96,9 @@ public class LoadImage {
 		try {
 			BitmapFactory.Options options = new BitmapFactory.Options();
 			options.inJustDecodeBounds = true;
-			BitmapFactory.decodeStream(new FileInputStream(file), null, options);
-			
-			int width = options.outWidth;
-			int height = options.outHeight;
-			int scale = 1;
-//			while(true) {
-//				if(width/2 < REQUIRED_SIZE || height/2 < REQUIRED_SIZE)
-//					break;
-//				
-//				width /= 2;
-//				height /= 2;
-//				scale *= 2;
-//			}
-			
+			BitmapFactory.decodeStream(new FileInputStream(file), null, options);			
 			BitmapFactory.Options options2 = new BitmapFactory.Options();
-			options2.inSampleSize = scale;
+			options.inSampleSize = SCALE;
 			return BitmapFactory.decodeStream(new FileInputStream(file), null, options2);
 		} catch (Exception e) { }
 		
@@ -172,7 +158,7 @@ public class LoadImage {
 			if(bitmap != null)
 				photo.imageView.setImageBitmap(bitmap);
 			else
-				photo.imageView.setImageResource(DEFAULT_IMG);
+				photo.imageView.setImageResource(default_img);
 		}
 	}
 	
