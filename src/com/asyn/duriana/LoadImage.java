@@ -45,7 +45,6 @@ public class LoadImage {
 		fileCache = new FileCache(context);
 		executorService = Executors.newFixedThreadPool(N_THREADS);
 		default_img = drawable;
-		default_img = drawable;
 	}
 	
 	public void displayImage(ImageView imageview, String url) {
@@ -55,7 +54,7 @@ public class LoadImage {
 			imageview.setImageBitmap(bitmap);
 		else {
 			queuePhoto(imageview, url);
-			imageview.setImageResource(default_img);
+			imageview.setImageResource(default_img); // Setting a default IMAGE if acquiring failed
 		}
 	}
 	
